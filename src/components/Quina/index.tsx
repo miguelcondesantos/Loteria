@@ -9,7 +9,7 @@ export default function Quina(){
         <div className="quina-bloco-home">
             <div>
                 <div className="quina-bloco-loteria">
-                    <img src={trevo} />
+                    <img src={trevo} alt=""/>
                     <span className="quina-nome-loteria">QUINA</span>
                 </div>
                 <div className="quina-bloco-estimativa">
