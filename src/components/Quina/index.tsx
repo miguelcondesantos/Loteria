@@ -37,7 +37,7 @@ export default function Quina(){
                     {
                         quina.quantidadeGanhadores === 0 ?
                         "ACUMULOU!" :
-                        `${quina.qunatidadeGanhadores} GANHADORES`
+                        `${quina.quantidadeGanhadores} GANHADORES`
                     }
                 </div>
                 <div className="quina-data-concurso">
