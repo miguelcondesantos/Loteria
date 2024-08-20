@@ -37,6 +37,7 @@ jobs:
           fi
 
       - name: Upload Build Artifacts
+        id: upload-artifact
         uses: actions/upload-artifact@v3
         with:
           name: react-build
@@ -56,16 +57,26 @@ jobs:
           echo "Listing files in the current directory after downloading artifacts:"
           ls -R
 
+      - name: Check Downloaded Artifacts
+        run: |
+          if [ -d "build" ]; then
+            echo "Build directory found after downloading artifacts."
+            ls -R build
+          else
+            echo "Build directory not found after downloading artifacts."
+            exit 1
+          fi
+
       - name: Install Netlify CLI
         run: npm install netlify-cli@17.10.1 -g
 
       - name: Deploy to Netlify
         run: |
           if [ -d "build" ]; then
-            echo "Build directory found."
+            echo "Deploying from build directory."
             netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }} --message "Deployed via GitHub Actions"
           else
-            echo "Build directory not found. Check if the artifact was downloaded correctly."
+            echo "Build directory still not found. Deploy failed."
             exit 1
           fi
         env:
