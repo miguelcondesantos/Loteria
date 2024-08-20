@@ -8,62 +8,40 @@ on:
     workflow_dispatch:
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                node-version: '18'
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
 
-            - name: Install dependencies
-              run: npm install
-             
-            - name: Build
-              run: npm run build
-             
-            - name: List root directory
-              run: ls -R
-              
-            - name: List build directory
-              run: |
-                if [ -d "build" ]; then
-                  ls -R build
-                else
-                  echo "Build directory does not exist"
-                fi
+      - name: Install Dependencies
+        run: npm install
 
-            - name: Upload build artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                name: react-build
-                path: build/
+      - name: Build project
+        run: npm run build
 
-    deploy-loteria:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+      - name: List build directory
+        run: |
+          if [ -d "build" ]; then
+            ls -R build
+          else
+            echo "Build directory does not exist"
+          fi
 
-            - name: Download build artifacts
-              uses: actions/download-artifact@v3
-              with:
-                name: react-build
-             
-            - name: List build directory after download
-              run: |
-                if [ -d "build" ]; then
-                  ls -R build
-                else
-                  echo "Build directory does not exist after download"
-                fi
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: react-build
+          path: build/
 
-            - name: Set up Netlify CLI
-              run: npm install -g netlify-cli
+      - name: Install Netlify CLI
+        run: npm install netlify-cli@17.10.1 -g
 
-            - name: Deploy to Netlify
-              run: netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
+      - name: Deploy to Netlify
+        run: netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
