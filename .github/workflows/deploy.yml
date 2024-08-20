@@ -32,6 +32,7 @@ jobs:
             ls -R build
           else
             echo "Build directory does not exist"
+            exit 1
           fi
 
       - name: Upload build artifacts
@@ -49,8 +50,19 @@ jobs:
         with:
           name: react-build
 
+      - name: List downloaded artifacts
+        run: |
+          if [ -d "build" ]; then
+            ls -R build
+          else
+            echo "Build directory does not exist after download"
+            exit 1
+          fi
+
       - name: Install Netlify CLI
         run: npm install -g netlify-cli@17.10.1
 
       - name: Deploy to Netlify
         run: netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
+
+        
