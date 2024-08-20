@@ -25,8 +25,16 @@ jobs:
             - name: Build
               run: npm run build
              
-            - name: List build directory before upload
-              run: ls -R build
+            - name: List root directory
+              run: ls -R
+              
+            - name: List build directory
+              run: |
+                if [ -d "build" ]; then
+                  ls -R build
+                else
+                  echo "Build directory does not exist"
+                fi
 
             - name: Upload build artifacts
               uses: actions/upload-artifact@v3
@@ -47,7 +55,12 @@ jobs:
                 name: react-build
              
             - name: List build directory after download
-              run: ls -R build
+              run: |
+                if [ -d "build" ]; then
+                  ls -R build
+                else
+                  echo "Build directory does not exist after download"
+                fi
 
             - name: Set up Netlify CLI
               run: npm install -g netlify-cli
