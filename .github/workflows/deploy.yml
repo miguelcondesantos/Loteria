@@ -13,7 +13,7 @@ jobs:
     outputs:
       build_path: ${{ steps.upload-artifact.outputs.build_path }}
     steps:
-      - name: Repositorio Checkout
+      - name: Repository Checkout
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
@@ -22,10 +22,10 @@ jobs:
           node-version: 18
           cache: "npm"
 
-      - name: Instalar Dependências
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build Projeto
+      - name: Build Project
         run: npm run build
 
       - name: Upload Build Artifacts
@@ -44,18 +44,25 @@ jobs:
         with:
           name: react-build
 
+      - name: Check Build Directory
+        run: |
+          # List files in the current directory for debugging
+          echo "Listing files in the current directory:"
+          ls -R
+
+          # Check if the build directory exists
+          if [ -d "build" ]; then
+            echo "Build directory found."
+          else
+            echo "Build directory not found. Check if the artifact was downloaded correctly."
+            exit 1
+          fi
+
       - name: Install Netlify CLI
         run: npm install netlify-cli@17.10.1 -g
 
       - name: Deploy to Netlify
         run: |
-          # Verificar se o diretório build está presente após o download
-          if [ -d "build" ]; then
-            echo "Diretório de build encontrado."
-            netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }} --message "Deployed via GitHub Actions"
-          else
-            echo "Diretório de build não encontrado. O deploy falhou."
-            exit 1
-          fi
+          netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }} --message "Deployed via GitHub Actions"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
