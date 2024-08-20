@@ -2,9 +2,9 @@ name: loteria.deploy
 
 on:
     push:
-        branches: [master]
+        branches: [main]
     pull_request:
-        branches: [master]
+        branches: [main]
     workflow_dispatch:
 
 jobs:
@@ -42,7 +42,4 @@ jobs:
               run: npm install -g netlify-cli
 
             - name: Deploy to Netlify
-              run: netlify deploy --prod --dir=build --auth ${{ secrets.nfp_8vxUBkJavsQmXjGPBP52xYbMid4g1t8y9749 }} --site ${{ secrets.c3e4fa0c-bc41-4cd9-b83a-1b42044f1048 }}
-              env:
-                NETLIFY_AUTH_TOKEN: ${{ secrets.nfp_8vxUBkJavsQmXjGPBP52xYbMid4g1t8y9749}}
-                NETLIFY_SITE_ID: ${{ secrets.c3e4fa0c-bc41-4cd9-b83a-1b42044f1048}}
+              run: netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}

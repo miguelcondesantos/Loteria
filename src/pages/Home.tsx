@@ -20,7 +20,7 @@ export default function Home(){
             ):
             (
                 <div className="home-carregando">
-                    <h3>Carregando...</h3>
+                    <h3>Carregando AAA...</h3>
                 </div>
             )
         }
