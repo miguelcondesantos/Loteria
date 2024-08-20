@@ -10,8 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      build_path: ${{ steps.upload-artifact.outputs.build_path }}
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v4
@@ -28,8 +26,17 @@ jobs:
       - name: Build Project
         run: npm run build
 
+      - name: List Build Directory
+        run: |
+          if [ -d "build" ]; then
+            echo "Build directory exists:"
+            ls -R build
+          else
+            echo "Build directory does not exist."
+            exit 1
+          fi
+
       - name: Upload Build Artifacts
-        id: upload-artifact
         uses: actions/upload-artifact@v3
         with:
           name: react-build
@@ -44,25 +51,22 @@ jobs:
         with:
           name: react-build
 
-      - name: Check Build Directory
+      - name: List Directory After Download
         run: |
-          # List files in the current directory for debugging
-          echo "Listing files in the current directory:"
+          echo "Listing files in the current directory after downloading artifacts:"
           ls -R
-
-          # Check if the build directory exists
-          if [ -d "build" ]; then
-            echo "Build directory found."
-          else
-            echo "Build directory not found. Check if the artifact was downloaded correctly."
-            exit 1
-          fi
 
       - name: Install Netlify CLI
         run: npm install netlify-cli@17.10.1 -g
 
       - name: Deploy to Netlify
         run: |
-          netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }} --message "Deployed via GitHub Actions"
+          if [ -d "build" ]; then
+            echo "Build directory found."
+            netlify deploy --prod --dir=build --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }} --message "Deployed via GitHub Actions"
+          else
+            echo "Build directory not found. Check if the artifact was downloaded correctly."
+            exit 1
+          fi
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
